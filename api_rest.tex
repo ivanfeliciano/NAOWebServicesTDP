@@ -1,0 +1,429 @@
+
+Esta interfaz es el producto de la integración de modelos de aprendizaje
+automático
+enfocados a casos de uso relacionados con la robótica.
+% Es uno de los componentes más importantes en toda la arquitectura,
+% es el que une los servicios web de
+% terceros, los módulos mantenidos por el LAR y los entrega en una sola API.
+
+La API REST  permite integrar dentro de una aplicación un
+conjunto de herramientas para el análisis de imágenes.
+Todas éstas basadas en modelos de aprendizaje automático. El URL base al
+que todos los recursos son relativos es \sphinxcode{http://132.248.180.17/}.
+
+La API tiene tres recursos:
+\begin{itemize}
+\item {} 
+\sphinxcode{/register}: para que un nuevo usuario se registre y pueda ocupar los otros recursos. Envía una dirección de correo y una contraseña.
+
+\item {} 
+\sphinxcode{/refreshtoken}: para que el usuario pueda obtener un nuevo token de acceso al enviar los datos con los que se registró.
+
+\item {} 
+\sphinxcode{/vision}: el recurso más importante. Se le solicita que haga procesamiento de imágenes.
+
+\end{itemize}
+
+\subsection{Vision}
+\label{\detokenize{chapter_two/desc_cloudnao:vision}}
+Este recurso es el encargado de la detección de características en una
+imagen. Estas características son: la \sphinxstylestrong{detección de objetos}, el
+\sphinxstylestrong{reconocimiento de rostros}, de personas previamente guardadas o de
+nuevos sujetos para su almacenamiento, la \sphinxstylestrong{clasificación en cuatro escenarios}, lugares
+dentro del laboratorio de algoritmos para la robótica, la
+\sphinxstylestrong{detección de etiquetas o categorías}
+y la \sphinxstylestrong{traducción de texto encontrado en una imagen}.
+
+En este recurso la única forma de persistencia de datos es al guardar el
+rostro de una nueva persona para su posterior reconocimiento.
+
+
+\subsubsection{POST}
+\label{\detokenize{chapter_two/desc_cloudnao:post-vision}}
+
+Se envía una imagen ya sea codificada en base 64 o mediante su URL y
+las características que se desean obtener. Las características disponibles
+son las siguientes:
+
+\begin{itemize}
+    \item{}
+    \sphinxcode{FACE\_ENROLL}:
+Detecta un rostro en la imagen y
+con un identificador enviado en
+el cuerpo de la petición se
+almacena en una galería de
+Kairos. Se emplea
+\texttt{/enroll}
+de Kairos.
+\item{}
+\sphinxcode{FACE\_RECOGNITION}:
+Encuentra rostros dentro de una
+imagen y los relaciona con los
+rostros similares previamente
+guardados en una galería de
+Kairos. Usa
+\texttt{/recognize}
+de la API de Kairos.
+\item{}
+\sphinxcode{OBJECT\_DETECTION}:
+Busca objetos en una la imagen,
+usa la API de detecctión de objetos de TensorFlow.
+Regresa las coordenadas de un
+cuadro delimitador para cada
+objeto detectado.
+\item{}
+\sphinxcode{LABELS\_DETECTION}:
+Clasifica una imagen en distintas
+categorías. Se vale de la API de Google Cloud Vision
+\item{}
+\sphinxcode{OCR\_TRANSLATION}:
+Lleva a cabo el reconocimiento de
+texto en una imagen, para
+posteriormente traducirlo.
+Utiliza la API de Google Cloud
+Vision
+para el reconocimiento de
+caracteres y la de Google Cloud
+Translation
+para la segunda parte del proceso.
+\item{}
+\sphinxcode{CLASSIFY\_INDOOR\_SCENES}:
+Clasifica una imagen en cuatro
+categorías. Cada categoría es un
+lugar dentro del área del LAR.
+
+\end{itemize}
+
+
+\paragraph{Mensaje de solicitud HTTP}
+\label{\detokenize{chapter_two/desc_cloudnao:peticion}}
+
+\subparagraph{Headers.}
+\label{\detokenize{chapter_two/desc_cloudnao:headers}}
+En los encabezados de la petición debe de ir el tipo de contenido que se envía
+y un token de acceso único para cada usuario registrado. Esto último
+simplemente es para evitar que cualquiera pueda hacer peticiones a la API.
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{n}{Content}\PYG{o}{\PYGZhy{}}\PYG{n}{Type}\PYG{p}{:} \PYG{n}{application}\PYG{o}{/}\PYG{n}{json}
+\PYG{n}{Authorization}\PYG{p}{:} \PYG{n}{ACCESS\PYGZus{}TOKEN}
+\end{sphinxVerbatim}
+
+
+\subparagraph{\sphinxstylestrong{Cuerpo.}}
+\label{\detokenize{chapter_two/desc_cloudnao:body}}
+En el cuerpo del mensaje se envía un JSON con la siguiente estructura. En la tabla 
+\ref{tab:body_json_schema_request} se describen los atributos del JSON.
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{p}{\PYGZob{}}
+  \PYG{l+s+s2}{\PYGZdq{}imageContent\PYGZdq{}}\PYG{o}{:} \PYG{l+s+s2}{\PYGZdq{}Hello, world!\PYGZdq{}}\PYG{p}{,}
+  \PYG{l+s+s2}{\PYGZdq{}imageSource\PYGZdq{}}\PYG{o}{:} \PYG{l+s+s2}{\PYGZdq{}Hello, world!\PYGZdq{}}\PYG{p}{,}
+  \PYG{l+s+s2}{\PYGZdq{}features\PYGZdq{}}\PYG{o}{:} \PYG{p}{[}
+    \PYG{p}{\PYGZob{}}
+      \PYG{l+s+s2}{\PYGZdq{}type\PYGZdq{}}\PYG{o}{:} \PYG{l+s+s2}{\PYGZdq{}Hello, world!\PYGZdq{}}\PYG{p}{,}
+      \PYG{l+s+s2}{\PYGZdq{}subjectID\PYGZdq{}}\PYG{o}{:} \PYG{l+s+s2}{\PYGZdq{}Hello, world!\PYGZdq{}}
+    \PYG{p}{\PYGZcb{}}
+  \PYG{p}{]}
+\PYG{p}{\PYGZcb{}}
+\end{sphinxVerbatim}
+
+
+\begin{table}[ht]
+\caption{Descripción de los elementos del JSON del cuerpo de la solicitud.\label{tab:body_json_schema_request}}
+\begin{tabular}{|l|l}
+\hline
+\multicolumn{2}{|l|}{\cellcolor[HTML]{68CBD0}\textbf{Propiedades}}                                                                                                                                                                                                      \\ \hline
+\multicolumn{2}{|l|}{\cellcolor[HTML]{68CBD0}\texttt{imageContent}}                                                                                                                                                                                                       \\ \hline
+Tipo de dato & \multicolumn{1}{l|}{string}                                                                                                                                                                                                      \\ \hline
+Descripción  & \multicolumn{1}{l|}{Imagen codificada en base 64.}                                                                                                                                                                               \\ \hline
+\multicolumn{2}{|l|}{\cellcolor[HTML]{68CBD0}\texttt{imageSource}}                                                                                                                                                                                                       \\ \hline
+Tipo de dato & \multicolumn{1}{l|}{string}                                                                                                                                                                                                      \\ \hline
+Descripción  & \multicolumn{1}{l|}{URL público de la imagen.}                                                                                                                                                                                   \\ \hline
+\multicolumn{2}{|l|}{\texttt{features}}                                                                                                                                                                                      \\ \hline
+Tipo de dato & \multicolumn{1}{l|}{array}                                                                                                                                                                                                       \\ \hline
+\multirow{4}{*}{Descripción}  & 
+\multicolumn{1}{l|}{
+Una arreglo de las características que se desean detectar
+en la} \\
+&
+\multicolumn{1}{l|}{imagen. Se debe solicitar al menos una de las seis disponibles.} \\&
+\multicolumn{1}{l|}{Por ejemplo FACE\_ENROLL, FACE\_RECOGNITION,} \\& 
+\multicolumn{1}{l|}{CLASSIFY\_INDOOR\_SCENES, etc.}
+
+
+\\ \hline
+\multicolumn{2}{|l|}{\cellcolor[HTML]{68CBD0}\textbf{Campos obligatorios}}                                                                                                                                                                                              \\ \hline
+\multicolumn{2}{|l|}{imageContent}                                                                                                                                                                                                              \\
+\multicolumn{2}{|l|}{imageSource}                                                                                                                                                                                                               \\
+\multicolumn{2}{|l|}{features}                                                                                                                                                                                                                  \\ \hline
+\end{tabular}
+\end{table}
+
+
+
+% \begin{sphinxVerbatim}[commandchars=\\\{\}]
+% \PYG{p}{\PYGZob{}}
+%   \PYG{l+s+s2}{\PYGZdq{}\PYGZdl{}schema\PYGZdq{}}\PYG{o}{:} \PYG{l+s+s2}{\PYGZdq{}http://json\PYGZhy{}schema.org/draft\PYGZhy{}04/schema\PYGZsh{}\PYGZdq{}}\PYG{p}{,}
+%   \PYG{l+s+s2}{\PYGZdq{}type\PYGZdq{}}\PYG{o}{:} \PYG{l+s+s2}{\PYGZdq{}object\PYGZdq{}}\PYG{p}{,}
+%   \PYG{l+s+s2}{\PYGZdq{}properties\PYGZdq{}}\PYG{o}{:} \PYG{p}{\PYGZob{}}
+%     \PYG{l+s+s2}{\PYGZdq{}imageContent\PYGZdq{}}\PYG{o}{:} \PYG{p}{\PYGZob{}}
+%       \PYG{l+s+s2}{\PYGZdq{}type\PYGZdq{}}\PYG{o}{:} \PYG{l+s+s2}{\PYGZdq{}string\PYGZdq{}}\PYG{p}{,}
+%       \PYG{l+s+s2}{\PYGZdq{}description\PYGZdq{}}\PYG{o}{:} \PYG{l+s+s2}{\PYGZdq{}Imagen codificada en base 64\PYGZdq{}}
+%     \PYG{p}{\PYGZcb{}}\PYG{p}{,}
+%     \PYG{l+s+s2}{\PYGZdq{}imageSource\PYGZdq{}}\PYG{o}{:} \PYG{p}{\PYGZob{}}
+%       \PYG{l+s+s2}{\PYGZdq{}type\PYGZdq{}}\PYG{o}{:} \PYG{l+s+s2}{\PYGZdq{}string\PYGZdq{}}\PYG{p}{,}
+%       \PYG{l+s+s2}{\PYGZdq{}description\PYGZdq{}}\PYG{o}{:} \PYG{l+s+s2}{\PYGZdq{}URL de la imagen\PYGZdq{}}
+%     \PYG{p}{\PYGZcb{}}\PYG{p}{,}
+%     \PYG{l+s+s2}{\PYGZdq{}features\PYGZdq{}}\PYG{o}{:} \PYG{p}{\PYGZob{}}
+%       \PYG{l+s+s2}{\PYGZdq{}type\PYGZdq{}}\PYG{o}{:} \PYG{l+s+s2}{\PYGZdq{}array\PYGZdq{}}\PYG{p}{,}
+%       \PYG{l+s+s2}{\PYGZdq{}description\PYGZdq{}}\PYG{o}{:} \PYG{l+s+s2}{\PYGZdq{}Una arreglo de las características que se desean detectar en la imagen. Se debe solicitar al menos una de las seis disponibles. Por ejemplo FACE\PYGZus{}ENROLL, FACE\PYGZus{}RECOGNITION, CLASSIFY\PYGZus{}INDOOR\PYGZus{}SCENES, etc.\PYGZdq{}}
+%     \PYG{p}{\PYGZcb{}}
+%   \PYG{p}{\PYGZcb{}}\PYG{p}{,}
+%   \PYG{l+s+s2}{\PYGZdq{}required\PYGZdq{}}\PYG{o}{:} \PYG{p}{[}
+%     \PYG{l+s+s2}{\PYGZdq{}imageContent\PYGZdq{}}\PYG{p}{,}
+%     \PYG{l+s+s2}{\PYGZdq{}imageSource\PYGZdq{}}\PYG{p}{,}
+%     \PYG{l+s+s2}{\PYGZdq{}features\PYGZdq{}}
+%   \PYG{p}{]}
+% \PYG{p}{\PYGZcb{}}
+% \end{sphinxVerbatim}
+
+
+\paragraph{Mensaje de respuesta HTTP}
+\label{\detokenize{chapter_two/desc_cloudnao:respuesta}}
+
+\subparagraph{\sphinxstylestrong{Cuerpo.}}
+\label{\detokenize{chapter_two/desc_cloudnao:id1}}
+En el cuerpo del mensaje de respuesta, si se obtiene un código 200,
+va un JSON con las características encontradas. En éste también
+se incluyen mensajes de error que no pertenecen al estándar del protocolo HTTP.
+En la tabla \ref{tab:json_schema_response} se describen los atributos del JSON.
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{p}{\PYGZob{}}
+  \PYG{l+s+s2}{\PYGZdq{}features\PYGZdq{}}\PYG{o}{:} \PYG{p}{\PYGZob{}}
+    \PYG{l+s+s2}{\PYGZdq{}faceRecognition\PYGZdq{}}\PYG{o}{:} \PYG{p}{[}
+      \PYG{p}{\PYGZob{}}
+        \PYG{l+s+s2}{\PYGZdq{}topLeftX\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{1}\PYG{p}{,}
+        \PYG{l+s+s2}{\PYGZdq{}topLeftY\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{1}\PYG{p}{,}
+        \PYG{l+s+s2}{\PYGZdq{}width\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{1}\PYG{p}{,}
+        \PYG{l+s+s2}{\PYGZdq{}height\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{1}\PYG{p}{,}
+        \PYG{l+s+s2}{\PYGZdq{}subjectId\PYGZdq{}}\PYG{o}{:} \PYG{l+s+s2}{\PYGZdq{}Hello, world!\PYGZdq{}}\PYG{p}{,}
+        \PYG{l+s+s2}{\PYGZdq{}confidence\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{1}
+      \PYG{p}{\PYGZcb{}}
+    \PYG{p}{]}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}objectDetection\PYGZdq{}}\PYG{o}{:} \PYG{p}{[}
+      \PYG{p}{\PYGZob{}}
+        \PYG{l+s+s2}{\PYGZdq{}category\PYGZdq{}}\PYG{o}{:} \PYG{l+s+s2}{\PYGZdq{}Hello, world!\PYGZdq{}}\PYG{p}{,}
+        \PYG{l+s+s2}{\PYGZdq{}confidence\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{1}\PYG{p}{,}
+        \PYG{l+s+s2}{\PYGZdq{}topLeftX\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{1}\PYG{p}{,}
+        \PYG{l+s+s2}{\PYGZdq{}topLeftY\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{1}\PYG{p}{,}
+        \PYG{l+s+s2}{\PYGZdq{}width\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{1}\PYG{p}{,}
+        \PYG{l+s+s2}{\PYGZdq{}height\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{1}
+      \PYG{p}{\PYGZcb{}}
+    \PYG{p}{]}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}labelsDetection\PYGZdq{}}\PYG{o}{:} \PYG{p}{[}
+      \PYG{p}{\PYGZob{}}
+        \PYG{l+s+s2}{\PYGZdq{}name\PYGZdq{}}\PYG{o}{:} \PYG{l+s+s2}{\PYGZdq{}Hello, world!\PYGZdq{}}\PYG{p}{,}
+        \PYG{l+s+s2}{\PYGZdq{}confidence\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{1}
+      \PYG{p}{\PYGZcb{}}
+    \PYG{p}{]}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}ocrTranslation\PYGZdq{}}\PYG{o}{:} \PYG{p}{\PYGZob{}}
+      \PYG{l+s+s2}{\PYGZdq{}sourceText\PYGZdq{}}\PYG{o}{:} \PYG{l+s+s2}{\PYGZdq{}Hello, world!\PYGZdq{}}\PYG{p}{,}
+      \PYG{l+s+s2}{\PYGZdq{}targetText\PYGZdq{}}\PYG{o}{:} \PYG{l+s+s2}{\PYGZdq{}Hello, world!\PYGZdq{}}\PYG{p}{,}
+      \PYG{l+s+s2}{\PYGZdq{}sourceLanguage\PYGZdq{}}\PYG{o}{:} \PYG{l+s+s2}{\PYGZdq{}Hello, world!\PYGZdq{}}
+    \PYG{p}{\PYGZcb{}}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}faceEnroll\PYGZdq{}}\PYG{o}{:} \PYG{p}{\PYGZob{}}
+      \PYG{l+s+s2}{\PYGZdq{}topLeftX\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{1}\PYG{p}{,}
+      \PYG{l+s+s2}{\PYGZdq{}topLeftY\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{1}\PYG{p}{,}
+      \PYG{l+s+s2}{\PYGZdq{}width\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{1}\PYG{p}{,}
+      \PYG{l+s+s2}{\PYGZdq{}height\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{1}\PYG{p}{,}
+      \PYG{l+s+s2}{\PYGZdq{}confidence\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{1}\PYG{p}{,}
+      \PYG{l+s+s2}{\PYGZdq{}gender\PYGZdq{}}\PYG{o}{:} \PYG{l+s+s2}{\PYGZdq{}Hello, world!\PYGZdq{}}
+    \PYG{p}{\PYGZcb{}}
+    \PYG{l+s+s2}{\PYGZdq{}indoorScenesClassifier\PYGZdq{}} \PYG{o}{:} \PYG{p}{\PYGZob{}}
+      \PYG{l+s+s2}{\PYGZdq{}indoorScene\PYGZdq{}}\PYG{o}{:} \PYG{l+s+s2}{\PYGZdq{}Hello, world!\PYGZdq{}}
+    \PYG{p}{\PYGZcb{}}
+  \PYG{p}{\PYGZcb{}}\PYG{p}{\PYGZcb{}}
+\end{sphinxVerbatim}
+
+\begin{longtable}{|l|l|}
+\caption{Atributos que componen el JSON del cuerpo de la respuesta.\label{tab:json_schema_response}}\\
+\hline
+\multicolumn{2}{|l|}{\cellcolor[HTML]{68CBD0}\texttt{features}}                                                                                                                                \\ \hline
+\endfirsthead
+%
+\endhead
+%
+\cellcolor[HTML]{68CBD0}\textbf{Tipo de dato} & objeto                                                                                                                                         \\ \hline
+\multicolumn{2}{|l|}{\cellcolor[HTML]{68CBD0}\textbf{Propiedades}}                                                                                                                             \\ \hline
+\multicolumn{2}{|l|}{\cellcolor[HTML]{68CBD0}\texttt{faceRecognition}}                                                                                                                         \\ \hline
+Tipo de dato                                  & array                                                                                                                                          \\ \hline
+Descripción                                   & \begin{tabular}[c]{@{}l@{}}Un arreglo de objetos que contienen \\ a los rostros reconocidos.\end{tabular}                                      \\ \hline
+\multicolumn{2}{|l|}{\cellcolor[HTML]{68CBD0}\texttt{objectDetection}}                                                                                                                         \\ \hline
+Tipo de dato                                  & array                                                                                                                                          \\ \hline
+Descripción                                   & Contiene un arreglo con todos los objetos detectados.                                                                                          \\ \hline
+\multicolumn{2}{|l|}{\cellcolor[HTML]{68CBD0}\texttt{labelsDetection}}                                                                                                                         \\ \hline
+Tipo de dato                                  & array                                                                                                                                          \\ \hline
+Descripción                                   & Contiene un arreglo con las etiquetas de la imagen.                                                                                            \\ \hline
+\multicolumn{2}{|l|}{\cellcolor[HTML]{68CBD0}\texttt{ocrTranslation}}                                                                                                                          \\ \hline
+\cellcolor[HTML]{FFFFFF}Tipo de dato          & objeto                                                                                                                                         \\ \hline
+\multicolumn{2}{|l|}{\cellcolor[HTML]{FFFFFF}Propiedades}                                                                                                                                      \\ \hline
+\multicolumn{2}{|l|}{\texttt{sourceText}}                                                                                                                                                      \\ \hline
+Tipo de dato                                  & string                                                                                                                                         \\ \hline
+Descripción                                   & El texto en formato UTF-8.                                                                                                                     \\ \hline
+\multicolumn{2}{|l|}{\texttt{targetText}}                                                                                                                                                      \\ \hline
+Tipo de dato                                  & string                                                                                                                                         \\ \hline
+Descripción                                   & El texto traducido.                                                                                                                            \\ \hline
+\multicolumn{2}{|l|}{\texttt{sourceLanguage}}                                                                                                                                                  \\ \hline
+Tipo de dato                                  & string                                                                                                                                         \\ \hline
+Descripción                                   & El idioma original.                                                                                                                            \\ \hline
+Descripción                                   & Un objecto con el texto encontrado en la imagen.                                                                                               \\ \hline
+\multicolumn{2}{|l|}{\cellcolor[HTML]{68CBD0}\texttt{faceEnroll}}                                                                                                                              \\ \hline
+Tipo de dato                                  & objeto                                                                                                                                         \\ \hline
+\multicolumn{2}{|l|}{Propiedades}                                                                                                                                                              \\ \hline
+\multicolumn{2}{|l|}{\texttt{topLeftX}}                                                                                                                                                        \\ \hline
+Tipo de dato                                  & number                                                                                                                                         \\ \hline
+Descripción                                   & Coordenada sobre el eje x.                                                                                                                     \\ \hline
+\multicolumn{2}{|l|}{\texttt{topLeftY}}                                                                                                                                                        \\ \hline
+Tipo de dato                                  & number                                                                                                                                         \\ \hline
+Descripción                                   & Coordenada                                                                                                                                     \\ \hline
+\multicolumn{2}{|l|}{\texttt{width}}                                                                                                                                                           \\ \hline
+Tipo de dato                                  & number                                                                                                                                         \\ \hline
+Descripción                                   & Ancho del recuadro que delimita la imagen.                                                                                                     \\ \hline
+\multicolumn{2}{|l|}{\texttt{height}}                                                                                                                                                          \\ \hline
+Tipo de dato                                  & number                                                                                                                                         \\ \hline
+Descripción                                   & Altura del recuadro que delimita la imagen.                                                                                                    \\ \hline
+\multicolumn{2}{|l|}{\texttt{confidence}}                                                                                                                                                      \\ \hline
+Tipo de dato                                  & number                                                                                                                                         \\ \hline
+Descripción                                   & Valor de 0-1 que representa una probabilidad.                                                                                                  \\ \hline
+\multicolumn{2}{|l|}{\texttt{gender}}                                                                                                                                                          \\ \hline
+Tipo de dato                                  & string                                                                                                                                         \\ \hline
+Descripción                                   & Sexo de la persona con ese rostro (M o F)                                                                                                      \\ \hline
+Descripción                                   & Características del rostro detectado.                                                                                                          \\ \hline
+\multicolumn{2}{|l|}{\cellcolor[HTML]{68CBD0}\texttt{indoorScenesClassifier}}                                                                                                                    \\ \hline
+Tipo de dato                                  & objeto                                                                                                                                         \\ \hline
+\multicolumn{2}{|l|}{Propiedades}                                                                                                                                                              \\ \hline
+\multicolumn{2}{|l|}{\texttt{indoorScene}}                                                                                                                                                     \\ \hline
+Tipo de dato                                  & string                                                                                                                                         \\ \hline
+Descripción                                   & \begin{tabular}[c]{@{}l@{}}La escena detectada, puede ser cualquiera de las\\ cuatro posibles (exit, soccer\_court, desks, office)\end{tabular} \\ \hline
+Descripción                                   & Escenario reconocido.                                                                                                                          \\ \hline
+\cellcolor[HTML]{68CBD0}\textbf{Descripción}  & \begin{tabular}[c]{@{}l@{}}Lista con las respuestas de acuerdo a las \\ características que se solicitaron.\end{tabular}                       \\ \hline
+\end{longtable}
+
+
+\subsubsection{Ejemplo de una petición a la API con cURL.}
+
+cURL es una herramienta en la línea de comandos para transferir
+datos usando diferentes protocolos. Por facilidad,
+se muestra el uso de la API a través de esta herramienta.
+Para solicitar el recurso \texttt{vision}, para procesamiento de imágenes,  se necesita un token de acceso. El token
+se obtiene creando un usuario haciendo una petición al recurso
+\texttt{register}. El fragmento de código  para solicitar este servicio con
+\texttt{cURL} es el siguiente:
+
+\fvset{hllines={, ,}}%
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+curl \PYGZhy{}X POST \PYG{l+s+se}{\PYGZbs{}}
+http://132.248.180.17/register \PYG{l+s+se}{\PYGZbs{}}
+\PYGZhy{}H \PYG{l+s+s1}{\PYGZsq{}content\PYGZhy{}type: application/json\PYGZsq{}}\PYG{l+s+se}{\PYGZbs{}}
+\PYGZhy{}d \PYG{l+s+s1}{\PYGZsq{}\PYGZob{}}
+\PYG{l+s+s1}{    \PYGZdq{}username\PYGZdq{} : \PYGZdq{}mock\PYGZus{}user@gmailcom\PYGZdq{},}
+\PYG{l+s+s1}{    \PYGZdq{}password\PYGZdq{} : \PYGZdq{}p45sw0rd\PYGZdq{}}
+\PYG{l+s+s1}{    \PYGZcb{}\PYGZsq{}}
+\end{sphinxVerbatim}
+
+La respuesta de la API es un JSON como el que sigue:
+
+\fvset{hllines={, ,}}%
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{p}{\PYGZob{}}
+    \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{message}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{User created successfully.}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{token}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{T6v23Tnw95S8BX2yNR8Os8RB6L4HAnvhTTrfjmxB5UyMaef}\PYG{l+s+s2}{\PYGZdq{}}
+\PYG{p}{\PYGZcb{}}
+\end{sphinxVerbatim}
+
+Con el token se pueden hacer las peticiones que se deseen al recurso
+\sphinxcode{\sphinxupquote{visión}}. Supongamos que queremos analizar una imagen para encontrar rostros, objetos, traducir 
+texto y clasificar de escenarios. Se hace como sigue:
+
+\fvset{hllines={, ,}}%
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+curl \PYGZhy{}X POST \PYG{l+s+se}{\PYGZbs{}}
+http://132.248.180.17/vision \PYG{l+s+se}{\PYGZbs{}}
+\PYGZhy{}H \PYG{l+s+s1}{\PYGZsq{}authorization: T6v23Tnw95S8BX2yNR8Os8RB6L4HAnvhTTrfjmxB5UyMaef\PYGZsq{}} \PYG{l+s+se}{\PYGZbs{}}
+\PYGZhy{}H \PYG{l+s+s1}{\PYGZsq{}content\PYGZhy{}type: application/json\PYGZsq{}} \PYG{l+s+se}{\PYGZbs{}}
+\PYGZhy{}d \PYG{l+s+s1}{\PYGZsq{}\PYGZob{}}
+\PYG{l+s+s1}{\PYGZdq{}imageSource\PYGZdq{} : \PYGZdq{}https://www.robotshop.com/blog/en/files/NAO\PYGZhy{}Hanover.jpg\PYGZdq{},}
+\PYG{l+s+s1}{   \PYGZdq{}features\PYGZdq{} : [}
+\PYG{l+s+s1}{      \PYGZob{}}
+\PYG{l+s+s1}{        \PYGZdq{}type\PYGZdq{}: \PYGZdq{}FACE\PYGZus{}RECOGNITION\PYGZdq{}}
+\PYG{l+s+s1}{      \PYGZcb{},}
+\PYG{l+s+s1}{      \PYGZob{}}
+\PYG{l+s+s1}{        \PYGZdq{}type\PYGZdq{} : \PYGZdq{}OBJECT\PYGZus{}DETECTION\PYGZdq{}}
+\PYG{l+s+s1}{      \PYGZcb{},}
+\PYG{l+s+s1}{      \PYGZob{}}
+\PYG{l+s+s1}{        \PYGZdq{}type\PYGZdq{} : \PYGZdq{}OCR\PYGZus{}TRANSLATION\PYGZdq{}}
+\PYG{l+s+s1}{      \PYGZcb{},}
+\PYG{l+s+s1}{      \PYGZob{}}
+\PYG{l+s+s1}{        \PYGZdq{}type\PYGZdq{} : \PYGZdq{}CLASSIFY\PYGZus{}INDOOR\PYGZus{}SCENES\PYGZdq{}}
+\PYG{l+s+s1}{      \PYGZcb{}}\PYG{l+s+s1}{]}\PYG{l+s+s1}{\PYGZcb{}\PYGZsq{}}
+\end{sphinxVerbatim}
+
+La API de CloudNAO envía el el cuerpo de su respuesta el
+siguiente JSON:
+
+\fvset{hllines={, ,}}%
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{p}{\PYGZob{}}
+    \PYG{l+s+s2}{\PYGZdq{}features\PYGZdq{}}\PYG{o}{:} \PYG{p}{\PYGZob{}}
+        \PYG{l+s+s2}{\PYGZdq{}objectDetection\PYGZdq{}}\PYG{o}{:} \PYG{p}{[}
+            \PYG{p}{\PYGZob{}}
+                \PYG{l+s+s2}{\PYGZdq{}confidence\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mf}{0.9916030764579773}\PYG{p}{,}
+                \PYG{l+s+s2}{\PYGZdq{}category\PYGZdq{}}\PYG{o}{:} \PYG{l+s+s2}{\PYGZdq{}person\PYGZdq{}}\PYG{p}{,}
+                \PYG{l+s+s2}{\PYGZdq{}topLeftY\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{42}\PYG{p}{,}
+                \PYG{l+s+s2}{\PYGZdq{}height\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{158}\PYG{p}{,}
+                \PYG{l+s+s2}{\PYGZdq{}topLeftX\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{430}\PYG{p}{,}
+                \PYG{l+s+s2}{\PYGZdq{}width\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{50}
+            \PYG{p}{\PYGZcb{}}\PYG{p}{,}
+            \PYG{p}{\PYGZob{}}
+                \PYG{l+s+s2}{\PYGZdq{}confidence\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mf}{0.9870478510856628}\PYG{p}{,}
+                \PYG{l+s+s2}{\PYGZdq{}category\PYGZdq{}}\PYG{o}{:} \PYG{l+s+s2}{\PYGZdq{}person\PYGZdq{}}\PYG{p}{,}
+                \PYG{l+s+s2}{\PYGZdq{}topLeftY\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{79}\PYG{p}{,}
+                \PYG{l+s+s2}{\PYGZdq{}height\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{115}\PYG{p}{,}
+                \PYG{l+s+s2}{\PYGZdq{}topLeftX\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{253}\PYG{p}{,}
+                \PYG{l+s+s2}{\PYGZdq{}width\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{49}
+            \PYG{p}{\PYGZcb{}}\PYG{p}{,}
+            \PYG{p}{\PYGZob{}}
+                \PYG{l+s+s2}{\PYGZdq{}confidence\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mf}{0.9252263307571411}\PYG{p}{,}
+                \PYG{l+s+s2}{\PYGZdq{}category\PYGZdq{}}\PYG{o}{:} \PYG{l+s+s2}{\PYGZdq{}person\PYGZdq{}}\PYG{p}{,}
+                \PYG{l+s+s2}{\PYGZdq{}topLeftY\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{11}\PYG{p}{,}
+                \PYG{l+s+s2}{\PYGZdq{}height\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{148}\PYG{p}{,}
+                \PYG{l+s+s2}{\PYGZdq{}topLeftX\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{2}\PYG{p}{,}
+                \PYG{l+s+s2}{\PYGZdq{}width\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{53}
+            \PYG{p}{\PYGZcb{}}\PYG{p}{,}
+            \PYG{p}{\PYGZob{}}
+                \PYG{l+s+s2}{\PYGZdq{}confidence\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mf}{0.9083054661750793}\PYG{p}{,}
+                \PYG{l+s+s2}{\PYGZdq{}category\PYGZdq{}}\PYG{o}{:} \PYG{l+s+s2}{\PYGZdq{}sports ball\PYGZdq{}}\PYG{p}{,}
+                \PYG{l+s+s2}{\PYGZdq{}topLeftY\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{248}\PYG{p}{,}
+                \PYG{l+s+s2}{\PYGZdq{}height\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{50}\PYG{p}{,}
+                \PYG{l+s+s2}{\PYGZdq{}topLeftX\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{219}\PYG{p}{,}
+                \PYG{l+s+s2}{\PYGZdq{}width\PYGZdq{}}\PYG{o}{:} \PYG{l+m+mi}{49}
+            \PYG{p}{\PYGZcb{}}\PYG{p}{,}
+        \PYG{p}{]}\PYG{p}{,}
+        \PYG{l+s+s2}{\PYGZdq{}indoorScenesClassify\PYGZdq{}}\PYG{o}{:} \PYG{p}{\PYGZob{}}
+            \PYG{l+s+s2}{\PYGZdq{}indoor\PYGZus{}scene\PYGZdq{}}\PYG{o}{:} \PYG{l+s+s2}{\PYGZdq{}soccer\PYGZus{}court\PYGZdq{}}
+        \PYG{p}{\PYGZcb{}}
+    \PYG{p}{\PYGZcb{}}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}errors\PYGZdq{}}\PYG{o}{:} \PYG{p}{\PYGZob{}}
+        \PYG{l+s+s2}{\PYGZdq{}faceRecognition\PYGZdq{}}\PYG{o}{:} \PYG{p}{\PYGZob{}}
+            \PYG{l+s+s2}{\PYGZdq{}message\PYGZdq{}}\PYG{o}{:} \PYG{l+s+s2}{\PYGZdq{}invalid url was sent\PYGZdq{}}
+        \PYG{p}{\PYGZcb{}}\PYG{p}{,}\PYG{l+s+s2}{\PYGZdq{}ocrTranslation\PYGZdq{}}\PYG{o}{:} \PYG{p}{\PYGZob{}}
+            \PYG{l+s+s2}{\PYGZdq{}message\PYGZdq{}}\PYG{o}{:} \PYG{l+s+s2}{\PYGZdq{}Text not found\PYGZdq{}}
+        \PYG{p}{\PYGZcb{}}
+    \PYG{p}{\PYGZcb{}}\PYG{p}{\PYGZcb{}}
+\end{sphinxVerbatim}
+
+
+
+

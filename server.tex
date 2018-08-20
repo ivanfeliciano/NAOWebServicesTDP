@@ -1,0 +1,49 @@
+Se creó un servidor el cual es cliente de los servicios web de terceros y a la vez
+ofrece los mantenidos por el LAR.
+El resultado de la unión cliente-servidor se
+entrega por medio de una
+API REST.
+Todos los servicios brindados tienen en común que están basados en modelos de
+aprendizaje automático, específicamente de aprendizaje profundo. Estos dan solución
+a problemas de visión computacional como la detección de rostros o el
+reconocimiento óptico de caracteres, el reconocimiento
+de voz, el procesamiento de lenguaje natural y la traducción automática
+neuronal. A continuación se enlistan los servicios de terceros que el servidor
+consume.
+\begin{itemize}
+\item {} 
+Google Cloud Vision, permite comprender el contenido de una imagen. Son dos las funcionalidades ocupadas; el etiquetado de imágenes en miles de categorías y el reconocimiento óptico de caracteres (OCR).
+
+% \item {} 
+% \url{https://cloud.google.com/speech/}{API Speech de Google Cloud}, convierte audio a texto.
+
+\item {} 
+Google Cloud Translation, se encarga de traducir una cadena arbitraria en cualquier idioma admitido.
+
+\item {} 
+Kairos, es una API de reconocimiento facial. Esta cuenta con varios métodos, de los cuales se utilizaron \sphinxstyleemphasis{enroll} y \sphinxstyleemphasis{recognize}. El primero para añadir a un nuevo rostro a una base de datos junto con un identificador, el segundo para encontrar a un usuario cuya cara ha sido almacenada.
+
+\item {} 
+Wit.ai, un servicio para procesamiento de lenguaje natural capaz de convertir oraciones en información estructurada.
+
+\end{itemize}
+
+
+Los servicios mantenidos por el LAR son dos modelos de TensorFlow.
+El primero permite la detección de objetos en imágenes y es parte
+de la API de detección de objetos de TensorFlow. El segundo
+servicio es un clasificador de imágenes en cuatro categorías.
+
+El servidor mantiene la ejecución de un contenedor de
+Docker en el que se encuentra corriendo una aplicación web desarrollada en Python.
+Dicha aplicación es la API REST que se comunica con el robot y dispositivos
+que soliciten los recursos. 
+La figura \ref{\detokenize{chapter_two/desc_cloudnao:cn-server-lar-diagram}} muestra de manera general la estructura del
+servidor.
+
+\begin{figure}[htbp]
+\centering
+
+
+\noindent\sphinxincludegraphics[scale=0.35]{{CN_server_lar_diagram}.png}
+\caption{Diagrama del servidor}\label{\detokenize{chapter_two/desc_cloudnao:cn-server-lar-diagram}}\end{figure}

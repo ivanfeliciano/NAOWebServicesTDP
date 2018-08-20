@@ -1,0 +1,105 @@
+
+\section{Servicios Web REST}
+\label{\detokenize{chapter_one/rest:arquitecturas-de-servicios-de-transferencia-de-estado-representacional}}\label{\detokenize{chapter_one/rest::doc}}
+
+
+\subsection{Transferencia de Estado Representacional (REST)}
+\label{\detokenize{chapter_one/rest:transferencia-de-estado-representacional-rest}}
+% En el año 2000, después de que la crisis de la escalabilidad de la web se
+% evitó, Fielding llamó y describió al estilo arquitectónico de la web en su
+% trabajo doctoral. \sphinxstylestrong{Transferencia de Estado Representacional} (REST por
+% sus siglas en inglés) fue el nombre que Fielding dio a su descripción del
+% estilo arquitectónico de la web, que está compuesto por las restricciones
+% mencionadas previamente.
+
+La Transferencia de Estado Representacional es un estilo de arquitectura de software.
+Este estilo es
+una abstracción de elementos arquitectónicos dentro de un sistema de hipermedia
+distribuido como es la Web. REST ignora los detalles de la implementación de
+componentes y sintaxis de protocolos de manera que pueda enfocarse en los
+papeles de los componentes, las restricciones sobre su interacción con otros
+componentes, y la interpretación de elementos de datos significativos.
+Abarca las limitaciones fundamentales sobre los componentes, conectores y datos
+que definen las bases de la arquitectura web y, por lo tanto, la esencia de su
+comportamiento como una aplicación basada en red. REST no es un estándar, sin
+embargo sí un conjunto de restricciones. No está atado al protocolo HTTP,
+pero a menudo se asocia con éste.
+
+
+\subsubsection{API REST}
+\label{\detokenize{chapter_one/rest:api-rest}}
+Un \sphinxstyleemphasis{servicio web} es un sistema de software diseñado para admitir
+la interacción interoperable de una máquina a otra  máquina a través de una red.
+Programas cliente usan \sphinxstyleemphasis{interfaces de programación de aplicaciones} (API
+por sus siglas en inglés) para comunicarse con servicios web. Una API expone un conjunto de datos y funciones para facilitar
+interacciones entre programas de computadora y permitiendo que
+intercambien información.
+
+\begin{figure}[htbp]
+\centering
+
+
+\noindent\sphinxincludegraphics[scale=0.60]{{web_service_cycle}.png}
+\caption{Una API web es el frente de un servicio web, escuchando y respondiendo las peticiones de los cliente directamente.}\label{\detokenize{chapter_one/rest:web-service-cycle}}\end{figure}
+
+El estilo arquitectónico REST se aplica comúnmente al diseño de API para
+servicios web modernos. Una API web que sigue el estilo REST es una API REST.
+Tener una API REST hace a un servicio web RESTful. Una API REST está formada de
+recursos entrelazados.\\
+
+REST es una arquitectura basada en recursos. Se accede a un recurso a través
+de una interfaz común basada en los métodos estándar de HTTP. REST
+solicita a los desarrolladores usar métodos HTTP explícitamente
+y de una forma que sea consistente con la definición del protocolo.
+Cada recurso se identifica con un URL. Todos los recursos deben soportar
+las operaciones HTTP más comunes, además REST permite que ese recurso
+tenga diferentes representaciones, por ejemplo, texto, XML, JSON, etc.
+El cliente REST puede solicitar una representación en específico por
+medio del protocolo HTTP. El cuadro \ref{\detokenize{chapter_one/rest:rest-struct}} describe
+los elementos usados en REST.
+
+
+
+\begin{table}
+\centering
+\caption{Elementos de REST}\label{\detokenize{chapter_one/rest:rest-struct}}
+\begin{tabulary}{\linewidth}[t]{|T|T|}
+\hline
+\sphinxstylethead{ 
+Elemento
+\unskip}\relax &\sphinxstylethead{ 
+Descripción
+\unskip}\relax \\
+\hline
+Recurso
+&
+Objetivo conceptual de una referencia de hipertexto. Por ejemplo: podcast.
+\\
+\hline
+Identificador de recurso
+&
+Un URL que identifica un recurso en específico. Por ejemplo: \sphinxurl{http://convoynetwork.com/podcast/123}
+\\
+\hline
+Metadatos del recurso
+&
+Información que describe al recurso. Por ejemplo: autor, etiqueta, etc.
+\\
+\hline
+Representación
+&
+El contenido del recurso. Por ejemplo: un JSON, un HTML o una imagen JPEG.
+\\
+\hline
+Metadatos de la representación
+&
+Información que describe como procesar la representación. Por ejemplo: tipo de medio, fecha, etc.
+\\
+\hline
+Datos de control
+&
+Información que describe cómo optimizar el procesamiento de respuesta. Por ejemplo: if-modified-since, cache-control-expiry.
+\\
+\hline
+\end{tabulary}
+\end{table}

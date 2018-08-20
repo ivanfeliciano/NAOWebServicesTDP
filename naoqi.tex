@@ -1,0 +1,377 @@
+
+
+\subsection{Robot NAO}
+NAO es un robot humanoide autónomo y programable desarrollado por la empresa de
+Aldebaran Robotics.
+
+El robot NAO mide 57.3 cm de altura, 27.3 cm de ancho, y pesa menos de 4.3 kg.
+El cuerpo está construido de un material de plástico y tiene una batería de ion
+de litio que lo abastece para un uso normal de aproximadamente
+90 minutos o 60 en un modo activo.
+
+Las versiones \textit{V5} y \textit{V4} tiene una CPU Atom de 1.6 GHz, 1 GB de RAM, una
+memoria flash de 2 GB y una micro SDHC de 8GB.
+
+Se comunica remotamente con otros dispositivos mediante WiFi o por medio de un
+cable Ethernet. También cuenta con un puerto USB cuyo principal uso es para
+añadir un dispositivo como un sensor 3D o un Arduino.
+
+Para la parte multimedia, el robot está equipado con un sistema de transmisión
+estéreo compuesto por dos bocinas en las orejas. Dos micrófonos en la cabeza
+con un paso de banda eléctrico entre 300Hz y 8kHz. Dos cámaras idénticas están
+localizadas en la parte anterior de la cabeza. Éstas proveen imágenes con una
+resolución de hasta 1280px $\times$ 960px y 30 cuadros por segundo.
+
+Cuenta con diodos emisores de luz distribuidos entre la cabeza, orejas, ojos, pecho y pies. Cada
+uno de estos últimos cuenta con resistencias sensibles a la fuerza, que son
+sensores encargados de medir la resistencia al cambio de acuerdo a una presión
+aplicada. Trabajan en un rango de 0 N a 25 N.
+
+En el torso está localizada una unidad de medición inercial, compuesta por un
+girómetro y un acelerómetro, la cual permite una estimación de la velocidad
+y postura del torso.
+
+El robot está equipado con dos sensores ultrasónicos, que sirven para estimar
+la distancia a obstáculos. Dependiendo de la versión del robot, el rango de
+detección varía de 0.20 cm a 0.80 cm en la última versión y 0.25 cm a 2.55 cm
+en versiones anteriores. Cuando la distancia es menor al límite inferior de
+cada versión, el robot únicamente sabe que hay un obstáculo presente.
+Tiene un cono efectivo de 60 grados.
+
+Entre los sensores restantes están los de posición de las articulaciones, los
+de contacto y los táctiles. Los dos últimos están en la cabeza, manos, pecho y
+pies.
+
+Tiene en total 25 articulaciones repartidas entre la cabeza, brazos,
+piernas y pelvis. Todas las articulaciones cuentan con controladores de posición.
+Dada una articulación que enlaza dos partes del cuerpo del robot, la parte
+del cuerpo que está más cerca del tronco se considera fija y la parte que está
+más lejos  es la que rota alrededor de los ejes de la articulación.
+Para realizar una rotación de las partes del cuerpo, definimos un sistema
+de referencia en cada articulación.
+En el sistema de referencia se tienen tres ángulos de rotación:
+\textit{roll} (dirección), \textit{pitch} (elevación) y \textit{roll} (alabeo).
+Las rotaciones \textit{roll}, son
+alrededor del eje X, las \textit{pitch}  sobre Y y \textit{yaw} con respecto a Z. La figura
+ \ref{\detokenize{chapter_one/naoqi:rollpitchyaw-frame}} muestra el sistema de referencia.
+
+\begin{figure}[htbp]
+\centering
+
+
+\noindent\includegraphics[scale=0.7]{{rollPitchYaw_frame}.png}
+\caption{Sistema de referencia de los ángulos de rotación}\label{\detokenize{chapter_one/naoqi:rollpitchyaw-frame}}\end{figure}
+
+En la figura \ref{\detokenize{chapter_one/naoqi:nao-config}} se muestran algunos de los componentes del robot NAO.
+
+\begin{figure}[htbp]
+\centering
+
+
+\noindent\includegraphics[scale=0.4]{{nao_config}.png}
+\caption{Componentes del robot NAO}\label{\detokenize{chapter_one/naoqi:nao-config}}\end{figure}
+
+
+\subsection{NAOqi}
+\label{\detokenize{chapter_one/naoqi:naoqi}}
+NAOqi es el nombre del software principal que corre sobre el robot y lo
+controla.El marco de trabajo de NAOqi es el marco de trabajo de programación
+usado para programar robots de Aldebaran. Brinda
+soluciones a necesidades básicas de la robótica como el paralelismo, el manejo
+de recursos, la sincronización y los eventos.
+
+\subsubsection{Interfaces de programación de aplicaciones (API) de NAOqi}
+\label{\detokenize{chapter_one/naoqi:interfaces-de-programacion-de-aplicaciones-api-de-naoqi}}
+NAOqi cuenta con bastantes API divididas en grupos de acuerdo a las
+funcionalidades que ofrecen. 
+% A continuación se enlistan algunos grupos
+% y sólo se describen de manera breve aquellas API,
+% que se utilizaron en el desarrollo de este proyecto.
+
+% NAOqi viene con una lista de módulos centrales que están disponibles siempre.
+% Cada módulo cuenta con una lista de métodos por defecto.
+
+
+% \subparagraph{ALMemory.}
+% \label{\detokenize{chapter_one/naoqi:id1}}
+% Es una memoria centralizada usada para almacenar toda la información importante
+% relacionada con la configuración del hardware del robot.
+% \texttt{ALMemory} provee información acerca del estado actual de actuadores y sensores.
+
+% De manera más específica, \texttt{ALMemory} es un mapa no ordenado de la biblioteca
+% \textbf{boost}. El mapa está compuesto por contenedores genéricos (\texttt{ALValues}).
+
+NAOqi contiene un grupo de módulos enfocados a los movimientos del robot,
+ya sea para navegar de manera segura, cambiar entre posturas predefinidas,
+realizar movimientos de forma autónoma y hasta generar movimientos
+personalizados.
+
+
+\subparagraph{ALMotion.}
+\label{\detokenize{chapter_one/naoqi:almotion}}
+Es la principal herramienta para permitir que el robot se mueva.
+
+Contiene cuatro principales grupos de métodos para controlar:
+\begin{itemize}
+\item {} 
+la rigidez de articulaciones, básicamente si un motor está prendido o apagado.
+
+\item {} 
+la posición de articulaciones, para la planeación de trayectorias (interpolación) y cambios en los valores de los motores como respuesta a datos en sensores (control reactivo).
+
+\item {} 
+el caminado, control de distancia y velocidad, posición en un ambiente, etc.
+
+\item {} 
+efector del robot en el espacio cartesiano, determinar el movimiento de una cadena de articulaciones para lograr que un actuador se ubique en una posición concreta (cinemática inversa).
+
+\end{itemize}
+
+El eje \textbf{X} es positivo con respecto al frente del robot, el eje \textbf{Y} de
+derecha a izquierda y el \textbf{Z} es vertical.
+La figura \ref{\detokenize{chapter_one/naoqi:almotionaxis}} muestra la definición de los ejes con respecto al robot.
+% \subparagraph{\textbf{Sistema Internacional de Unidades}}
+% \label{\detokenize{chapter_one/naoqi:sistema-internacional-de-unidades}}
+El módulo de \texttt{ALMotion} usa el Sistema Internacional de Unidades (metros,
+segundos, radianes, etc).
+\begin{figure}[!ht]
+\centering
+
+
+\noindent\includegraphics[scale=0.40]{{almotionaxis}.png}
+\caption{Sistema de ejes sobre los que el robot ejecuta movimientos}\label{\detokenize{chapter_one/naoqi:almotionaxis}}\end{figure}
+
+
+
+
+% \paragraph{Audio}
+% \label{\detokenize{chapter_one/naoqi:audio}}
+NAOqi cuenta con componentes de software para el audio; para
+manejar la salida o entrada a través de sus bocinas y micrófonos,
+para la detección y localización de sonidos,  y para el manejo del lenguaje.
+
+
+\subparagraph{ALTextToSpeech.}
+\label{\detokenize{chapter_one/naoqi:altexttospeech}}
+Este módulo permite al robot hablar. Envía órdenes a un componente que
+convierte texto a un discurso hablado, y autoriza la personalización de la voz.
+El resultado de la síntesis es enviado a las bocinas del robot.
+
+
+\subparagraph{ALAnimatedSpeech.}
+\label{\detokenize{chapter_one/naoqi:alanimatedspeech}}
+El módulo \texttt{ALAnimatedSpeech} brinda la posibilidad de hacer que el robot hable
+de una manera expresiva. El funcionamiento de este módulo es como sigue:
+\begin{enumerate}
+\item {} 
+\texttt{ALAnimatedSpeech} recibe texto que puede ser \textit{anotado} con \textit{instrucciones}.
+
+\item {} 
+Divide el texto en subcadenas de menor tamaño a la original.
+
+\item {} 
+Analiza el texto y anota las cosas que reconoce para realizar movimientos de acuerdo al contexto.
+
+\item {} 
+Cualquier parte del texto que no esté anotado con animaciones se llena con \textit{modos de lenguaje corporal}.
+
+\item {} 
+El módulo prepara al robot para ejecutar cada instrucción para que estas sean llamadas tan pronto como se necesiten. Esto permite que el discurso y las instrucciones estén sincronizados.
+
+\item {} 
+\texttt{ALAnimatedSpeech} hace que el robot diga el texto y se mantenga al tanto del discurso para lanzar las instrucciones en el momento correcto.
+
+\end{enumerate}
+
+
+\subparagraph{ALAudioRecorder.}
+\label{\detokenize{chapter_one/naoqi:alaudiorecorder}}
+\texttt{ALAudioRecorder} provee servicios de grabación en archivos «WAV»
+u «OGG» a partir de las señales recibidas de los micrófonos del robot.
+
+Este módulo depende la biblioteca de Linux SDNFile para
+codificar de manera eficiente entradas de audio en tiempo real.
+
+Las capacidades de grabación están limitadas a los siguientes
+formatos:
+\begin{itemize}
+\item {} 
+cuatro canales 48000 Hz para OGG y WAV
+
+\item {} 
+un canal (anterior, posterior, izquierda o derecha) para OGG y WAV.
+
+\end{itemize}
+
+%\paragraph{Vision}
+% \label{\detokenize{chapter_one/naoqi:vision}}
+Los módulos de visión provistos por NAOqi se encargan del manejo de video e
+imágenes, detección de objectos predefinidos en video, y cuenta con herramientas
+para crear una memoria visual donde aprenda y reconozca ciertos patrones,
+y herramientas para navegación, usar una imagen como brújula, entre otras.
+
+
+\subparagraph{ALVideoDevice.}
+\label{\detokenize{chapter_one/naoqi:alvideodevice}}
+Este módulo es responsable de proveer, de una manera eficiente, imágenes de la
+cámara del robot a todos los módulos que las procesan, como \texttt{ALFaceDetection}
+o \texttt{ALVisionRecognition}.
+
+
+% \subparagraph{Uso}
+% \label{\detokenize{chapter_one/naoqi:id2}}
+Para empezar a utilizar este módulo es necesario seguir los siguientes pasos:
+\begin{enumerate}
+\item {} 
+Hacer que tu módulo de visión se suscriba al proxy de \texttt{ALVideoDevice}, llamando el método \texttt{subscribeCamera()} y pasando como parámetros la resolución, espacio de color y tasa de fotogramas.
+
+\item {} 
+En el bucle del proceso principal, obtener una imagen llamando a los métodos \texttt{getImageLocal()} o \texttt{getImageRemote()} (dependiendo si el módulo es local o remoto).
+
+\item {} 
+Liberar la imagen llamando \texttt{releaseImage()}.
+
+\item {} 
+Cuando se detiene el módulo, se llama \texttt{unsubscribe()} después de salir de bucle principal.
+
+\end{enumerate}
+
+% \paragraph{Sensores}
+% \label{\detokenize{chapter_one/naoqi:sensores}}
+% Existen numerosos sensores en el robot NAO. NAOqi ofrece módulos para interactuar
+% con el robot a través de algunos de ellos, o manejar eventos cuando estos
+% cambian valores.
+
+
+% \subparagraph{ALSonar.}
+% \label{\detokenize{chapter_one/naoqi:alsonar}}
+% El módulo de \texttt{ALSonar} obtiene valores de los sensores ultrasónicos desde
+% \texttt{ALMemory}, procesa esa información y lanza eventos de acuerdo con la situación.
+% Para ahorrar energía, los sensores ultrasónicos no están activados por defecto.
+
+% Los valores actuales de los sensores se pueden recuperar desde \texttt{ALMemory} a través del método \texttt{getData()} de \texttt{ALMemory}.
+
+
+%\subparagraph{Uso}
+%\label{\detokenize{chapter_one/naoqi:id3}}
+% El hardware de los sensores no se inicia de manera automática. Para empezar,
+% es necesario suscribirse al módulo de \texttt{ALSonar} a través del método \texttt{subscribe()}.
+% Hacer esto prende los sensores ultrasónicos.
+% Para apagar los sensores, se debe cancelar la suscripción con el método
+% \texttt{unsubscribe()} de \texttt{ALSonar}.
+
+
+% \subsubsection{SDK de Python}
+% \label{\detokenize{chapter_one/naoqi:sdk-de-python}}
+% La API de Python para los robots de Aldebaran permite:
+% \begin{itemize}
+% \item {} 
+% usar la API de C++ desde una máquina remota
+
+% \item {} 
+% crear módulos de Python que puedan ejecutarse remotamente o localmente en el robot.
+
+% \end{itemize}
+
+% Un programa muy básico en Python para los robots tiene la siguiente estructura:
+% \begin{itemize}
+% \item {} 
+% Primero importar \texttt{ALProxy}
+
+% \item {} 
+% Instanciar un objecto de \texttt{ALProxy} para el módulo que se quiere usar
+
+% \item {} 
+% Llamar un método
+
+% \end{itemize}
+
+% El siguiente fragmento de código es un ejemplo de un programa que hace al robot
+% caminar sobre su eje \textbf{X} durante tres segundos:
+
+% \begin{sphinxVerbatim}[commandchars=\\\{\}]
+% \PYG{c+c1}{\PYGZsh{} encoding: utf\PYGZhy{}8}
+% \PYG{k+kn}{import} \PYG{n+nn}{time}
+% \PYG{k+kn}{from} \PYG{n+nn}{naoqi} \PYG{k}{import} \PYG{n}{ALProxy} \PYG{c+c1}{\PYGZsh{} Importa ALProxy}
+
+% \PYG{n}{motion\PYGZus{}proxy} \PYG{o}{=} \PYG{n}{ALProxy}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{ALMotion}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{\PYGZlt{}IP del robot\PYGZgt{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+m+mi}{9559}\PYG{p}{)} \PYG{c+c1}{\PYGZsh{} Crear un proxy al módulo ALMotion}
+
+% \PYG{n}{motion\PYGZus{}proxy}\PYG{o}{.}\PYG{n}{wakeUp}\PYG{p}{(}\PYG{p}{)} \PYG{c+c1}{\PYGZsh{} Utiliza un método de ALMotion para cambiar la postura del robot}
+% \PYG{n}{x} \PYG{o}{=} \PYG{l+m+mf}{0.5}
+% \PYG{n}{y} \PYG{o}{=} \PYG{l+m+mf}{0.0}
+% \PYG{n}{theta} \PYG{o}{=} \PYG{l+m+mf}{0.0}
+
+% \PYG{n}{motion\PYGZus{}proxy}\PYG{o}{.}\PYG{n}{moveToward}\PYG{p}{(}\PYG{n}{x}\PYG{p}{,} \PYG{n}{y}\PYG{p}{,} \PYG{n}{theta}\PYG{p}{)}
+% \PYG{n}{time}\PYG{o}{.}\PYG{n}{sleep}\PYG{p}{(}\PYG{l+m+mi}{3}\PYG{p}{)}
+
+% \PYG{n}{motion\PYGZus{}proxy}\PYG{o}{.}\PYG{n}{stopMove}\PYG{p}{(}\PYG{p}{)}
+
+% \PYG{n}{motion\PYGZus{}proxy}\PYG{o}{.}\PYG{n}{rest}\PYG{p}{(}\PYG{p}{)}
+% \end{sphinxVerbatim}
+
+
+% \subsubsection{SDK de JAVA}
+% \label{\detokenize{chapter_one/naoqi:sdk-de-java}}
+% El SDK de Java provee una API para llamar servicios remotos, crear nuevos
+% servicios y reaccionar a eventos.
+
+% El SDK está basado en la biblioteca \textbf{libqi-java}, la cual utiliza el
+% \textbf{marco de trabajo qi}. Es una nueva arquitectura, que permite utilizar la API de NAOqi con una sintaxis
+% nueva y sencilla.En vez de crear un proxy a un módulo, se crea una sesión y se solicita un servicio. El resultado de esto es un objeto con los mismos métodos del
+% módulo que se desea.
+
+% Existe un archivo \texttt{.jar} por cada plataforma y versión de NAOqi. Éste
+% permite usar la API de C++ de Aldebaran o crear servicios
+% personalizados, y ejecutarlos desde un dispositivo remoto o directamente en el
+% robot.
+
+% Para compilar una aplicación desde la línea de comandos, se realiza los
+% siguiente
+
+% \begin{sphinxVerbatim}[commandchars=\\\{\}]
+% \PYG{c+c1}{\PYGZsh{} Compilación}
+% javac \PYGZhy{}cp /ruta/a/java\PYGZhy{}naoqi\PYGZhy{}sdk\PYGZhy{}\PYGZlt{}version\PYGZgt{}\PYGZhy{}\PYGZlt{}platform\PYGZgt{}.jar MyApp.java
+% \PYG{c+c1}{\PYGZsh{} Ejecución}
+% java \PYGZhy{}cp /ruta/a/java\PYGZhy{}naoqi\PYGZhy{}sdk\PYGZhy{}\PYGZlt{}version\PYGZgt{}\PYGZhy{}\PYGZlt{}platform\PYGZgt{}.jar:. MyApp
+% \end{sphinxVerbatim}
+
+% Hay dos conceptos importantes que se deben conocer que permiten la comunicación
+% con el robot: \texttt{Application} y \texttt{Session}.
+
+% Una \texttt{Application} es responsable de inicializar el marco de trabajo
+% y conectarse a una sesión. Una \texttt{Session} es lo que permite conectarse a
+% servicios local o remotamente.
+
+% Por defecto, el URL de la sesión está configurado para ser
+% \texttt{127.0.0.1:9559}. Pero éste se puede cambiar en los argumentos del
+% constructor de \texttt{Application}.
+
+% En el SDK de Java, existen clases para cada servicio. Esto último significa
+% que se debe crear una instancia de cada servicio que se desea para que sea
+% posible llamar sus métodos.
+
+% El siguiente ejemplo muestra como hacer que el robot diga la frase
+% “Cells Interlinked Within Cells Interlinked” usando \texttt{ALTextToSpeech}.
+
+% \begin{sphinxVerbatim}[commandchars=\\\{\}]
+% \PYG{k+kd}{public} \PYG{k+kd}{static} \PYG{k+kt}{void} \PYG{n+nf}{main}\PYG{o}{(}\PYG{n}{String}\PYG{o}{[}\PYG{o}{]} \PYG{n}{args}\PYG{o}{)} \PYG{o}{\PYGZob{}}
+%   \PYG{c+c1}{// Se define el URL del robot}
+%   \PYG{n}{String} \PYG{n}{robotUrl} \PYG{o}{=} \PYG{l+s}{\PYGZdq{}tcp://192.168.4.220:9559\PYGZdq{}}\PYG{o}{;}
+%   \PYG{n}{Application} \PYG{n}{application} \PYG{o}{=} \PYG{k}{new} \PYG{n}{Application}\PYG{o}{(}\PYG{n}{args}\PYG{o}{,} \PYG{n}{robotUrl}\PYG{o}{)}\PYG{o}{;}
+%   \PYG{k}{try}\PYG{o}{\PYGZob{}}
+%       \PYG{c+c1}{// Se inicial la aplicación y se genera una sesión}
+%       \PYG{n}{application}\PYG{o}{.}\PYG{n+na}{start}\PYG{o}{(}\PYG{o}{)}\PYG{o}{;}
+%       \PYG{c+c1}{// La sesión puede recuperarse a través del método siguiente}
+%       \PYG{c+c1}{// application.session();}
+%       \PYG{c+c1}{// Crear un objeto de ALTextToSpeech y lo enlaza con la sesión actual}
+%       \PYG{n}{ALTextToSpeech} \PYG{n}{tts} \PYG{o}{=} \PYG{k}{new} \PYG{n}{ALTextToSpeech}\PYG{o}{(}\PYG{n}{application}\PYG{o}{.}\PYG{n+na}{session}\PYG{o}{(}\PYG{o}{)}\PYG{o}{)}\PYG{o}{;}
+%       \PYG{c+c1}{// El robot dice la frase}
+%       \PYG{n}{tts}\PYG{o}{.}\PYG{n+na}{say}\PYG{o}{(}\PYG{l+s}{\PYGZdq{}Cells Interlinked Within Cells Interlinked\PYGZdq{}}\PYG{o}{)}\PYG{o}{;}
+%   \PYG{o}{\PYGZcb{}}
+%   \PYG{k}{catch}\PYG{o}{(}\PYG{n}{Exception} \PYG{n}{e}\PYG{o}{)}\PYG{o}{\PYGZob{}}
+%       \PYG{c+c1}{// La aplicación no pudo iniciar.}
+%       \PYG{n}{e}\PYG{o}{.}\PYG{n+na}{printStackTrace}\PYG{o}{(}\PYG{o}{)}\PYG{o}{;}
+%   \PYG{o}{\PYGZcb{}}
+% \PYG{o}{\PYGZcb{}}
+% \end{sphinxVerbatim}
+

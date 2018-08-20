@@ -1,0 +1,48 @@
+\def\sphinxdocclass{article}
+\documentclass[spanish]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{babel}
+\usepackage{graphicx}
+\usepackage{cmap}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amstext}
+\usepackage{amsthm}
+\usepackage{multirow}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{longtable}
+\usepackage[dontkeepoldnames]{sphinx}
+\usepackage{bold-extra}
+\usepackage{caption}
+\usepackage{subfig}
+\usepackage{url}
+
+
+\title{Consumo de servicios web de transferencia de estado representacional con el robot humanoide Fibonacho y sus aplicaciones}
+\author{Ivan Feliciano Avelino}
+\date{\today}
+
+\graphicspath{{figures/}}
+
+
+\begin{document}
+\maketitle
+\input{abstract.tex}
+\section{Introducción}
+\input{intro.tex}
+\section{Antecedentes}
+\input{naoqi.tex}
+\input{rest.tex}
+\section{Servidor REST}
+\input{server.tex}
+\section{API REST}
+\input{api_rest.tex}
+\section{Aplicaciones}
+\input{aplicaciones.tex}
+\input{cnn.tex}
+%\section{Resultados}
+\section{Conclusiones}
+\input{conclusiones.tex}
+\nocite{*}
+\bibliographystyle{unsrt}
+\bibliography{referencias}
+\end{document}
