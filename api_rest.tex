@@ -24,7 +24,7 @@ La API tiene tres recursos:
 
 \end{itemize}
 
-\subsection{Vision}
+\subsection{Recurso /vision}
 \label{\detokenize{chapter_two/desc_cloudnao:vision}}
 Este recurso es el encargado de la detección de características en una
 imagen. Estas características son: la \sphinxstylestrong{detección de objetos}, el
@@ -38,10 +38,11 @@ En este recurso la única forma de persistencia de datos es al guardar el
 rostro de una nueva persona para su posterior reconocimiento.
 
 
-\subsubsection{POST}
+\subsubsection{POST /vision}
 \label{\detokenize{chapter_two/desc_cloudnao:post-vision}}
 
-Se envía una imagen ya sea codificada en base 64 o mediante su URL y
+El único método definido para el recurso \texttt{/vision}
+es POST. Se envía a la API una imagen ya sea codificada en base 64 o mediante su URL y
 las características que se desean obtener. Las características disponibles
 son las siguientes:
 
@@ -95,7 +96,7 @@ lugar dentro del área del LAR.
 \end{itemize}
 
 
-\paragraph{Mensaje de solicitud HTTP}
+\paragraph{Mensaje de solicitud}
 \label{\detokenize{chapter_two/desc_cloudnao:peticion}}
 
 \subparagraph{Headers.}

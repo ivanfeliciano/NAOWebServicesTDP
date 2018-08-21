@@ -1,12 +1,19 @@
 \subsection{Clasificación de imágenes para localización}
 
-Para completar la arquitectura CloudNAO falta implementar un modelo de aprendizaje 
-profundo que se brinde como un servicio web para ser consumido por robots NAO.
-A pesar de que el servicio de detección de objetos es mantenido por el LAR, y 
-se adaptó para ser consumido a través de la API REST, no fue construido
-desde cero ya que es parte de la API de detección de objetos de TensorFlow.
-Es por eso que como parte final del proyecto se desarrolló un modelo para que 
-resuelva la tarea de clasificar imágenes.
+Una aplicación de uno de los servicios que brinda la API REST
+y que además fue desarrollado por el LAR es la clasificación de
+imágenes en cuatro clases, donde cada clase representa
+un escenario dentro dentro del área del laboratorio. Este servicio de procesamiento de imágenes permite que el robot conozca en qué espacio se encuentra al navegar en esta zona.
+
+\subsubsection{Objetivos}
+
+\begin{itemize}
+    \item Implementar un modelo de aprendizaje profundo.
+    \item Consumir el modelo de aprendizaje profundo como un servicio web.
+\end{itemize}
+
+\subsubsection{Problema}
+
 
 El problema de clasificación de imágenes es la tarea de asignarle a una imagen de
 entrada una etiqueta a partir de un conjunto de categorías. Este es uno de los principales
@@ -17,12 +24,15 @@ autónoma, nos gustaría que supiera en que lugar está simplemente con una foto
 que obtenga en ese momento desde sus cámaras, así podría saber si ha llegado al 
 lugar de su objetivo, o a partir de la zona donde se ubica planear una trayectoria.
 
-Lo anterior nos inspiró en la creación de un modelo que clasificara imágenes
-de algunos lugares sobre los que podría navegar el robot NAO. 
-Como solución a este problema de clasificación se propuso usar 
-una red neuronal convolucional, que recibiera como entrada un arreglo con los
-pixeles de una imagen tomada por el robot, y la salida fuera la categoría
-a la que pertenece esa imagen. 
+\subsubsection{Solución}
+
+
+Se implementó en TensorFlow un modelo para clasificar imágenes
+de algunos lugares sobre los que podría navegar el robot Fibonacho. 
+
+El modelo es
+una red neuronal convolucional, que recibe como entrada un arreglo con los
+pixeles de una imagen tomada por el robot, y la salida es la categoría a la que pertenece esa imagen. 
 Las clases en las que se desea clasificar las imágenes son lugares alrededor
 del Laboratorio de Algoritmos para la Robótica, que se ubica en el cubículo $15$ del
 Centro de Desarrollo Tecnológico de la FES Acatlán. Se eligieron las siguientes cuatro zonas:
@@ -34,40 +44,20 @@ Centro de Desarrollo Tecnológico de la FES Acatlán. Se eligieron las siguiente
     \item Zona de trabajo del Laboratorio.
 \end{itemize}
 
-Para finalizar,
-se debe integrar uno de los cinco modelos descritos en la tabla \ref{table:models_results} sobre la API REST de CloudNAO y luego hacer peticiones con el robot a ésta.
 Los modelos elaborados en TensorFlow contienen la gráfica de cómputo
 y los valores de los parámetros que se han entrenado. Estos datos
 están contenidos en varios archivos que se pueden guardar para
 entrenamientos posteriores o para realizar inferencias sobre 
 un modelo cuyas variables han sido aprendidas.
 
-Se eligió el modelo con la precisión más alta y con el menor
-tiempo de entrenamiento que es el modelo (1). 
-%Durante la ejecución
-%de la gráfica del modelo se crea una instancia de la clase \texttt{tf.train.Saver()}. Esto crea cuatro archivos
-%uno con extensión \texttt{.meta}, uno con extensión \texttt{.index},
-%otro con extensión \texttt{.data} y otro sin extensión llamado
-%\texttt{checkpoint}. El primero guarda toda la gráfica de
-%TensorFlow, los otros tres almacenan los valores de las variables.
-%Después de guardar, simplemente se restaura el modelo
-%y se puedan hacer inferencias al alimentarlo con una imagen.
-Dentro de la API REST, la clase que se encarga de restaurar la gráfica y valores del modelo
-es \texttt{ImageClasssfier} dentro del módulo \texttt{indoor\_scenes\_classsifier} del paquete \texttt{tf\_models}.
-En el apartado \textit{Modelos de TensorFlow (tf\_models)}
-de la sección \ref{chapter_two/desc_cloudnao:api-rest-de-cloudnao}
-se describe cómo utilizar esta clase.
 
-Por otra parte el robot NAO o cualquier otro
-dispositivo cliente se comunica con la API a través
-de una biblioteca que permita hacer peticiones 
-HTTP. En el caso del robot ocupamos la biblioteca
-\texttt{requests} de Python. Para obtener una imagen 
-del robot codificada en base 64 se utilizó la clase \texttt{Robot}
-del módulo \texttt{nao\_robot} descrito en la sección
-\ref{\detokenize{firebase-nao-robot}}. Es la cadena
-que representa la imagen la que se envía a la API REST usando
-\texttt{requests}.
+La API REST se encarga de restaurar la gráfica y valores del modelo para que al recibir una imagen enviada por el robot
+Fibonacho  o cualquier otro
+dispositivo cliente se envíe en el cuerpo de la respuesta
+un JSON con la cadena que identifica a la categoría 
+inferida.
+
+\subsubsection{Resultados}
 
 Se hicieron $40$ solicitudes a la API REST desde el robot,
 $10$ por cada categoría. Esto es, se enviaron
@@ -77,7 +67,6 @@ En las tablas \ref{table:soccer_nao_results},
 \ref{table:exit}, \ref{table:desks} y
 \ref{table:office}, se resumen los resultados obtenidos.
 En la figura \ref{nao_api_images} se muestran algunas imágenes capturadas en las pruebas.
-
 
 
 Se puede ver que existen más aciertos
@@ -95,11 +84,7 @@ auxiliar a la navegación del robot.
 El tiempo de solicitud y repuesta varía entre peticiones.
 Factores que influyen al tiempo son el tamaño de la 
 imagen enviada y la velocidad de la conexión del cliente
-y del servidor. Convendría probar el modelo sobre PaaS
-como Google Cloud o Heroku para ver si hay una mejora
-en el tiempo.
-
-
+y del servidor. 
 
 \begin{table}[!h]
 \centering

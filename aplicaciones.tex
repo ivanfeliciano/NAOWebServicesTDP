@@ -15,14 +15,14 @@ de caras enviando sólo una imagen capturada por el robot.
 
 \subsubsection{Problema}
 
-El robot NAO, a través de la API de NAOqi \texttt{ALFaceDetection},
+El robot Fibonacho, a través de la API de NAOqi \texttt{ALFaceDetection},
 cuenta con métodos que permiten la detección de rostros
 y el reconocimiento de caras previamente almacenadas.
-La detección de rostros se ejecuta rápidamente, tanto como
+La detección de rostros se ejecuta lo suficientemente rápido como
 para poner en funcionamiento un rastreador o seguidor
 de rostros. El reconocimiento de personas lleva casi el 
 mismo tiempo de procesamiento y funciona a pesar de algunas
-variaciones en las caras, por ejemplo si el sujeto lleva 
+variaciones en las caras, por ejemplo, si el sujeto lleva 
 una gorra o lentes.
 
 Aunque la API de NAOqi funciona muy bien, tiene
@@ -97,10 +97,10 @@ Kairos, la detección del género, la edad y la raza.
 
 \begin{figure}[htbp]
 \centering
+\includegraphics[scale=0.6]{study_case_kairos}
 \caption{El flujo de el reconocimiento de personas. 1) El usuario presiona el botón para capturar una imagen desde el robot. 2) El robot envía la imagen a la 
 aplicación. 3) El usuario presiona el botón Reconoce personas y envía la imagen a la API REST. 4) La API solicita el recurso \texttt{recognize} de Kairos. 5) Kairos envía un JSON como respuesta. 6) La API 
 envía un JSON a la aplicación móvil. 7) La aplicación ejecuta remotamente el módulo de NAOqi para realizar el discurso animado.}
-\includegraphics[scale=0.6]{study_case_kairos}
 \end{figure}
 
 
@@ -111,14 +111,14 @@ Una aplicación interesante es la
 detección de texto en una imagen y su
 traducción.
 En la API REST se combinan dos servicios
-para añadir al robot NAO la funcionalidad de extracción y traducción de texto en imágenes. 
+para añadir al robot Fibonacho la funcionalidad de extracción y traducción de texto en imágenes. 
 
 
 \subsubsection{Objetivos}
 
 \begin{itemize}
     \item Implementar el reconocimiento óptico
-    de caracteres sobre el robot NAO.
+    de caracteres sobre el robot Fibonacho.
     \item Utilizar servicios en la nube para traducción
     automática neuronal y reconocimiento óptico de caracteres.
     \item Permitir que el robot asista a los usuarios
@@ -130,7 +130,7 @@ para añadir al robot NAO la funcionalidad de extracción y traducción de texto
 El reconocimiento óptico de caracteres (OCR por sus siglas en inglés) permite detectar y extraer texto de imágenes para luego
 almacenarlo en un formato que una máquina pueda entender.
 
-A diferencia del caso de estudio anterior, el robot NAO
+A diferencia del caso de estudio anterior, el robot Fibonacho
 no cuenta con una API para detección de
 texto en imágenes, ni con una herramienta
 para traducir sentencias. Por las características
@@ -143,11 +143,11 @@ de imágenes tiene una amplia aplicación.
 
 
 La API de Vision de Google Cloud ofrece el servicio de OCR
-que además incluye la detección del idioma en que se encuentra escrito.
+que además incluye la detección del idioma en que se encuentra escrito el texto encontrado.
 Google Cloud cuenta también con una API para traducción de 
 texto.
-En la API REST combinan estos dos servicios
-para añadir al robot NAO la funcionalidad de extracción y traducción de texto en imágenes. 
+En la API REST se combinan estos dos servicios
+para añadir al robot Fibonacho la funcionalidad de extracción y traducción de texto en imágenes. 
 
 El usuario simplemente adquiere una fotografía
 capturada por la cámara del robot y se hace la petición
@@ -183,7 +183,7 @@ a internet.
 \subsection{Reconocimiento de voz}
 
 Este caso de estudio se aplica
-directamente sobre el robot NAO, conectándolo
+directamente sobre el robot Fibonacho, conectándolo
 a la API de Wit.ai para procesamiento de
 un discurso oral y poder interactuar con él a través de comandos de voz.
 
@@ -194,7 +194,7 @@ un discurso oral y poder interactuar con él a través de comandos de voz.
 
     \item Utilizar un servicio de procesamiento
     de lenguaje natural en la nube.
-    \item Desarrollar un asistente sencillo con una interacción por voz sobre el robot NAO.
+    \item Desarrollar un asistente sencillo con una interacción por voz sobre el robot Fibonacho.
     \item Implementar en el robot, un programa local
     que se conecte con servicios en la nube.
     
@@ -206,7 +206,7 @@ un discurso oral y poder interactuar con él a través de comandos de voz.
 Una aplicación interesante de tecnologías que realizan el
 procesamiento de lenguaje natural es la creación de bots conversacionales
 o asistentes por voz.
-El robot NAO es una plataforma con las características
+El robot Fibonacho es una plataforma con las características
 para servir como asistente por voz, que a pesar de contar con un
 módulo de reconocimiento de voz (\texttt{ALSpeechRecognition}), éste es muy 
 básico y limitado.
@@ -215,11 +215,11 @@ Una aplicación de reconocimiento de voz
 utilizando únicamente la API de NAOqi es estática.
 El módulo \texttt{ALSpeechRecognition} sólo reconoce
 palabras predefinidas no la intención
-del discurso del usuario.f
+del discurso del usuario.
 Por ejemplo, si deseamos que el robot salude
 cuando un usuario lo hace, se deben 
 definir todas las formas posibles en las que
-la persona puede decir "Hola".
+la persona puede decir ``Hola''.
 
 \subsubsection{Solución}
 
@@ -247,14 +247,14 @@ web de Wit.ai. Ésta cuenta con una herramienta para
 crear estos dos elementos a partir de oraciones que el usuario
 posiblemente enviará en un mensaje. Por ejemplo,
 cuando el usuario inicie una conversación posiblemente
-sea con un "Hola robot", por lo que podemos definir una
+sea con un ``Hola robot'', por lo que podemos definir una
 intención con valor \texttt{saludo}.
 Se pueden añadir más sentencias
 que correspondan a la intención \texttt{saludo}
-como "Buenas tardes" o
-"Buena día NAO".
+como ``Buenas tardes'' o
+``Buena día Fibonacho''.
 La entidades permite realizar específicamente cierta acción.
-Por ejemplo, si le decimos "Cambia a la posición de descanso", la intención es \texttt{cambiar posición} y la
+Por ejemplo, si le decimos: ``Cambia a la posición de descanso'', la intención es \texttt{cambiar posición} y la
 entidad es a qué posición debe cambiar, a la de descanso
 en nuestro ejemplo.
 A partir de esto podemos definir acciones muy simples
@@ -282,7 +282,7 @@ FIN                                                                 &           
 
 
 % \begin{itemize}
-% \item  \texttt{walk}: El robot camina una pequeña distancia. "Vamos, camina."
+% \item  \texttt{walk}: El robot camina una pequeña distancia. ``Vamos, camina.''
 % \item \texttt{restPosition}: El robot cambia a una posición de descanso (crouch). "Descansa robot".
 % \item \texttt{greeting}: El robot realiza un gesto y saluda al usuario."Hola robot".
 % \item \texttt{photography}: El robot toma una fotografía y la almacena en su disco. "Toma una foto de lo que ves".
@@ -311,10 +311,10 @@ entre los servicios en la nube y los usuarios.
 
 \begin{figure}[htbp]
 \centering
+\includegraphics{study_case_wit}
 \caption{El funcionamiento de la interacción con el robot a través de un discurso
 oral. 1) El usuario envía un mensaje que el robot graba en un archivo de audio de 3 segundos de duración. 2) El robot envía el archivo binario de audio
 a la API de Wit.ai. 3) Wit.ai envía un JSON con las entidades encontradas. El robot realiza una acción dependiendo de las entidades.}
-\includegraphics{study_case_wit}
 \end{figure}
 
 % \subsubsection{Clasificación de imágenes en escenarios}
@@ -338,7 +338,7 @@ a la API de Wit.ai. 3) Wit.ai envía un JSON con las entidades encontradas. El r
 % lugar de su objetivo, o a partir de la zona donde se ubica planear una trayectoria.
 
 % Lo anterior nos inspiró en la creación de un modelo que clasificara imágenes
-% de algunos lugares sobre los que podría navegar el robot NAO. 
+% de algunos lugares sobre los que podría navegar el robot Fibonacho. 
 % Como solución a este problema de clasificación se propuso usar 
 % una red neuronal convolucional, que recibiera como entrada un arreglo con los
 % pixeles de una imagen tomada por el robot, y la salida fuera la categoría
@@ -350,6 +350,6 @@ a la API de Wit.ai. 3) Wit.ai envía un JSON con las entidades encontradas. El r
 % \begin{itemize}
 %     \item El cubículo.
 %     \item La salida de emergencia.
-%     \item La cancha de entrenamiento de fútbol para el robot NAO.
+%     \item La cancha de entrenamiento de fútbol para el robot Fibonacho.
 %     \item Zona de trabajo del Laboratorio.
 % \end{itemize}
